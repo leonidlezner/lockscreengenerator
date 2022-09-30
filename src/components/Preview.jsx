@@ -1,21 +1,31 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import Konva from "konva";
 
 export default function Preview(props) {
   const stageRef = useRef(null);
   const canvasContainerRef = useRef(null);
+  const previewContainerRef = useRef(null);
+  const pixelRatio = useRef(1);
 
-  const panelWidth = props.width / props.pixelRatio;
-  const panelHeight = props.height / props.pixelRatio;
+  const panelDimensions = () => {
+    return [
+      props.width / pixelRatio.current,
+      props.height / pixelRatio.current,
+    ];
+  };
 
   function handleDownload() {
     const anchor = document.createElement("a");
-    anchor.href = stageRef.current.toDataURL({ pixelRatio: props.pixelRatio });
+    anchor.href = stageRef.current.toDataURL({
+      pixelRatio: pixelRatio.current,
+    });
     anchor.download = `background_${props.width}_${props.height}.png`;
     anchor.click();
   }
 
   function createSolidBackground(color) {
+    const [panelWidth, panelHeight] = panelDimensions();
+
     const rect = new Konva.Rect({
       x: 0,
       y: 0,
@@ -28,6 +38,8 @@ export default function Preview(props) {
   }
 
   function createStage() {
+    const [panelWidth, panelHeight] = panelDimensions();
+
     const stage = new Konva.Stage({
       container: canvasContainerRef.current,
       width: panelWidth,
@@ -38,19 +50,11 @@ export default function Preview(props) {
   }
 
   function createCard() {
+    const [panelWidth, panelHeight] = panelDimensions();
+
     const cardWidth = panelWidth * 0.8;
     const cardX = panelWidth / 2 - cardWidth / 2;
-    const textPadding = 12;
-
-    const group = new Konva.Group({
-      draggable: true,
-      x: cardX,
-      y: 60,
-    });
-
-    group.on("dragmove", () => {
-      group.x(cardX);
-    });
+    const textPadding = 22 / pixelRatio.current;
 
     const textFields = props.lines.map((line, index) => {
       return new Konva.Text({
@@ -59,13 +63,11 @@ export default function Preview(props) {
         text: line.text,
         align: "center",
         width: cardWidth - textPadding * 2,
-        fontSize: line.fontSize ?? 18,
+        fontSize: (line.fontSize ?? 18) / pixelRatio.current,
         fontFamily: line.fontFamily ?? "Calibri",
         fill: line.color ?? "#fff",
         wrap: "word",
         lineHeight: 1.5,
-      }).cache({
-        drawBorder: true,
       });
     });
 
@@ -85,8 +87,17 @@ export default function Preview(props) {
       shadowBlur: 5,
       opacity: 0.9,
       cornerRadius: 10,
-    }).cache({
-      drawBorder: true,
+    });
+
+    const group = new Konva.Group({
+      draggable: true,
+      x: cardX,
+      y:
+        panelHeight - totalTextHeight - props.bottomOffset / pixelRatio.current,
+    });
+
+    group.on("dragmove", () => {
+      group.x(cardX);
     });
 
     group.add(rect);
@@ -105,6 +116,31 @@ export default function Preview(props) {
   }
 
   useEffect(() => {
+    const resizeCanvas = () => {
+      pixelRatio.current =
+        props.width / previewContainerRef.current.offsetWidth;
+
+      if (stageRef.current) {
+        const [panelWidth, panelHeight] = panelDimensions();
+        stageRef.current.width(panelWidth);
+        stageRef.current.height(panelHeight);
+      }
+    };
+
+    resizeCanvas();
+
+    const observer = new ResizeObserver((entries) => {
+      window.requestAnimationFrame(() => {
+        if (!Array.isArray(entries) || !entries.length) {
+          return;
+        }
+
+        resizeCanvas();
+      });
+    });
+
+    observer.observe(previewContainerRef.current);
+
     stageRef.current = createStage();
 
     const layer = new Konva.Layer();
@@ -114,7 +150,14 @@ export default function Preview(props) {
     layer.add(createCard());
 
     stageRef.current.add(layer);
-  }, [panelWidth, panelHeight]);
+
+    return () => {
+      observer.disconnect();
+      layer.destroy();
+      stageRef.current.destroy();
+      stageRef.current = null;
+    };
+  }, [props.width, props.height]);
 
   const downloadPanel = (
     <div>
@@ -128,7 +171,7 @@ export default function Preview(props) {
   );
 
   return (
-    <div className="space-y-1">
+    <div className="space-y-1" ref={previewContainerRef}>
       <div>{downloadPanel}</div>
       <div ref={canvasContainerRef}></div>
       <div>{downloadPanel}</div>

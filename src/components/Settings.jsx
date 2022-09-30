@@ -44,20 +44,20 @@ export const defaultSettings = {
   lines: [
     {
       text: "Please return to",
-      fontSize: 16,
+      fontSize: 32,
     },
     {
       text: "Firstname Lastname",
-      fontSize: 24,
-      color: "#0f0",
+      fontSize: 48,
+      color: "#fff",
     },
     {
       text: "firstname.lastname@company.com",
-      fontSize: 16,
+      fontSize: 32,
     },
     {
       text: "0123456678",
-      fontSize: 20,
+      fontSize: 32,
     },
   ],
 };
