@@ -1,4 +1,6 @@
 import { useState } from "react";
+import { IMAGES } from "../data/images";
+import { SCREENSIZES } from "../data/screensizes";
 import Preview from "./Preview";
 import Settings, { defaultSettings } from "./Settings";
 
@@ -6,18 +8,24 @@ export default function Editor() {
   const [settings, setSettings] = useState(defaultSettings);
 
   return (
-    <div className="bg-red-50 sm:flex">
-      <div className="bg-green-100 p-2 sm:flex-1">
-        <h1 className="bg-green-200 p-2 font-semibold">Settings</h1>
+    <div className="overflow-hidden sm:flex sm:rounded-md">
+      <div className="bg-gray-100 p-3 sm:flex-1">
+        <div className="mb-3 p-2">
+          <h1 className="font-semibold">Configure your lock screen image</h1>
+          <p className="text-sm text-gray-500">
+            Privacy note: This app works solely in your browser and sends no
+            information to the server.
+          </p>
+        </div>
         <Settings settings={settings} setSettings={setSettings} />
       </div>
-      <div className="bg-blue-100 p-2 md:w-72 lg:w-96">
+      <div className="bg-gray-700 p-3 md:w-72 lg:w-96">
         <Preview
-          width={settings.screenSize.width}
-          height={settings.screenSize.height}
-          bottomOffset={settings.screenSize.bottomOffset}
+          width={SCREENSIZES[settings.screenSize].width}
+          height={SCREENSIZES[settings.screenSize].height}
+          bottomOffset={SCREENSIZES[settings.screenSize].bottomOffset}
           lines={settings.lines}
-          image={settings.image}
+          image={IMAGES[settings.image]}
         />
       </div>
     </div>

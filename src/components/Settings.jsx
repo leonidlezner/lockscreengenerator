@@ -1,63 +1,53 @@
 import { SCREENSIZES } from "../data/screensizes";
 import { IMAGES } from "../data/images";
+import SettingsElement from "./SettingsElement";
+import SelectElement from "./SelectElement";
+import SettingsLines from "./SettingsLines";
 
 export default function Settings({ settings, setSettings }) {
   function handleChange(event) {
     const { name, value } = event.target;
-    var resolvedValue = value;
-
-    if (name === "screenSize") {
-      resolvedValue = SCREENSIZES[value];
-    }
-
-    if (name === "image") {
-      resolvedValue = IMAGES[value];
-    }
 
     setSettings((prevData) => {
       return {
         ...prevData,
-        [name]: resolvedValue,
+        [name]: value,
       };
     });
   }
 
-  const screenSizesElement = (
-    <select name="screenSize" onChange={handleChange}>
-      {SCREENSIZES.map((el, index) => (
-        <option value={index} key={index}>
-          {el.title}
-        </option>
-      ))}
-    </select>
-  );
-
-  const imagesElement = (
-    <select name="image" onChange={handleChange}>
-      {IMAGES.map((el, index) => (
-        <option value={index} key={index}>
-          {el.title}
-        </option>
-      ))}
-    </select>
-  );
-
   return (
-    <div className="bg-emerald-400">
-      <div>{screenSizesElement}</div>
-      <div>{imagesElement}</div>
+    <div className="space-y-2">
+      <SettingsElement name="screenSize" label="Smartphone">
+        <SelectElement
+          items={SCREENSIZES}
+          name="screenSize"
+          value={settings.screenSize}
+          onChange={handleChange}
+        />
+      </SettingsElement>
+
+      <SettingsElement name="image" label="Image">
+        <SelectElement
+          items={IMAGES}
+          name="image"
+          value={settings.image}
+          onChange={handleChange}
+        />
+      </SettingsElement>
+
+      <SettingsLines
+        name="lines"
+        onChange={handleChange}
+        value={settings.lines}
+      />
     </div>
   );
 }
 
 export const defaultSettings = {
-  screenSize: {
-    title: SCREENSIZES[0].title,
-    width: SCREENSIZES[0].width,
-    height: SCREENSIZES[0].height,
-    bottomOffset: SCREENSIZES[0].bottomOffset,
-  },
-  image: IMAGES[0],
+  screenSize: 0,
+  image: 0,
   lines: [
     {
       text: "Please return to",

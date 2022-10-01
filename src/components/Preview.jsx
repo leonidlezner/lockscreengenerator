@@ -28,20 +28,6 @@ export default function Preview(props) {
     anchor.click();
   }
 
-  function createSolidBackground(color) {
-    const [panelWidth, panelHeight] = panelDimensions();
-
-    const rect = new Konva.Rect({
-      x: 0,
-      y: 0,
-      fill: color,
-      width: panelWidth,
-      height: panelHeight,
-    });
-
-    return rect;
-  }
-
   function createImageBackground() {
     const [panelWidth, panelHeight] = panelDimensions();
 
@@ -173,7 +159,7 @@ export default function Preview(props) {
     <div>
       <button
         onClick={handleDownload}
-        className="w-full bg-purple-700 p-2 font-semibold text-purple-200 hover:bg-purple-600"
+        className="hover: w-full rounded-md bg-gradient-to-b from-gray-500 to-gray-600 p-2 font-semibold text-gray-200 shadow-sm hover:from-gray-200 hover:to-gray-300 hover:text-gray-600"
       >
         Download
       </button>
@@ -182,7 +168,7 @@ export default function Preview(props) {
 
   return (
     <div className="relative" ref={previewContainerRef}>
-      <div className="space-y-1">
+      <div className="space-y-2">
         <div>{downloadPanel}</div>
         <div ref={canvasContainerRef}></div>
         <div>{downloadPanel}</div>
