@@ -1,4 +1,5 @@
 import Konva from "konva";
+import { FONTSIZES } from "../data/fontsizes";
 
 export default function createCard({
   lines,
@@ -10,10 +11,7 @@ export default function createCard({
   const createElements = () => {
     const textFields = lines.map((line, index) => {
       return new Konva.Text({
-        text: line.text,
         align: "center",
-        fontFamily: line.fontFamily ?? "Calibri",
-        fill: line.color ?? "#fff",
         wrap: "word",
         lineHeight: 1.5,
       });
@@ -40,6 +38,17 @@ export default function createCard({
 
   const [textFields, cardBackground, cardGroup] = createElements();
 
+  const updateTextFields = (lines, pixelRatio) => {
+    for (let i = 0; i < textFields.length; i++) {
+      textFields[i].setAttrs({
+        text: lines[i].text,
+        fontFamily: lines[i].fontFamily ?? "Calibri",
+        fill: lines[i].color ?? "#fff",
+        fontSize: (FONTSIZES[lines[i].fontSize].fontSize ?? 18) / pixelRatio,
+      });
+    }
+  };
+
   const positionElements = (pixelRatio) => {
     const [panelWidth, panelHeight] = panelDimensions();
     const cardWidth = panelWidth * 0.8;
@@ -48,9 +57,6 @@ export default function createCard({
 
     textFields.forEach((field, index) => {
       field.x(textPadding);
-
-      field.fontSize((lines[index].fontSize ?? 18) / pixelRatio);
-
       field.width(cardWidth - textPadding * 2);
     });
 
@@ -79,7 +85,12 @@ export default function createCard({
     }
   };
 
+  updateTextFields(lines, pixelRatio);
   positionElements(pixelRatio);
 
-  return { group: cardGroup, position: positionElements };
+  return {
+    group: cardGroup,
+    position: positionElements,
+    updateTextFields: updateTextFields,
+  };
 }

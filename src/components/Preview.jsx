@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import Konva from "konva";
 import createCard from "./createCard";
 import BusyOverlay from "./BusyOverlay";
+import DownloadPanel from "./DownloadPanel";
 
 export default function Preview(props) {
   const stageRef = useRef(null);
@@ -104,6 +105,7 @@ export default function Preview(props) {
       }
 
       if (cardRef.current) {
+        cardRef.current.updateTextFields(props.lines, pixelRatio.current);
         cardRef.current.position(pixelRatio.current);
       }
     };
@@ -133,7 +135,6 @@ export default function Preview(props) {
       pixelRatio: pixelRatio.current,
     });
 
-    //backgroundRef.current = createSolidBackground("#444");
     backgroundRef.current = createImageBackground();
     updateImage();
 
@@ -149,29 +150,23 @@ export default function Preview(props) {
       cardRef.current = null;
       backgroundRef.current = null;
     };
-  }, [props.width, props.height]);
+  }, [props.width, props.height, props.lines.length]);
+
+  useEffect(() => {
+    cardRef.current.updateTextFields(props.lines, pixelRatio.current);
+    cardRef.current.position(pixelRatio.current);
+  }, [props.lines]);
 
   useEffect(() => {
     updateImage();
   }, [props.image]);
 
-  const downloadPanel = (
-    <div>
-      <button
-        onClick={handleDownload}
-        className="hover: w-full rounded-md bg-gradient-to-b from-gray-500 to-gray-600 p-2 font-semibold text-gray-200 shadow-sm hover:from-gray-200 hover:to-gray-300 hover:text-gray-600"
-      >
-        Download
-      </button>
-    </div>
-  );
-
   return (
     <div className="relative" ref={previewContainerRef}>
       <div className="space-y-2">
-        <div>{downloadPanel}</div>
+        <DownloadPanel onClick={handleDownload} />
         <div ref={canvasContainerRef}></div>
-        <div>{downloadPanel}</div>
+        <DownloadPanel onClick={handleDownload} />
       </div>
       {isBusy && <BusyOverlay />}
     </div>
