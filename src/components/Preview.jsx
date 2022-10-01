@@ -1,5 +1,7 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import Konva from "konva";
+import createCard from "./createCard";
+import BusyOverlay from "./BusyOverlay";
 
 export default function Preview(props) {
   const stageRef = useRef(null);
@@ -8,6 +10,7 @@ export default function Preview(props) {
   const canvasContainerRef = useRef(null);
   const previewContainerRef = useRef(null);
   const pixelRatio = useRef(1);
+  const [isBusy, setIsBusy] = useState(false);
 
   function panelDimensions() {
     return [
@@ -39,6 +42,19 @@ export default function Preview(props) {
     return rect;
   }
 
+  function createImageBackground() {
+    const [panelWidth, panelHeight] = panelDimensions();
+
+    let image = new Konva.Image({
+      x: 0,
+      y: 0,
+      width: panelWidth,
+      height: panelHeight,
+    });
+
+    return image;
+  }
+
   function createStage() {
     const [panelWidth, panelHeight] = panelDimensions();
 
@@ -51,145 +67,37 @@ export default function Preview(props) {
     return stage;
   }
 
-  function createCard() {
-    const createElements = () => {
-      const textFields = props.lines.map((line, index) => {
-        return new Konva.Text({
-          text: line.text,
-          align: "center",
-          fontFamily: line.fontFamily ?? "Calibri",
-          fill: line.color ?? "#fff",
-          wrap: "word",
-          lineHeight: 1.5,
-        });
-      });
+  function positionImage(center) {
+    const [panelWidth, panelHeight] = panelDimensions();
 
-      const cardBackground = new Konva.Rect({
-        fill: "#000",
-        shadowColor: "#666",
-        shadowBlur: 5,
-        opacity: 0.9,
-        cornerRadius: 10,
-      });
+    const imageRatio = backgroundRef.current.image().height / panelHeight;
 
-      const cardGroup = new Konva.Group({
-        draggable: true,
-      });
+    backgroundRef.current.setAttrs({
+      cropX:
+        backgroundRef.current.image().width * (center ?? 0.5) - panelWidth / 2,
+      cropY: 0,
+      cropWidth: panelWidth * imageRatio,
+      cropHeight: backgroundRef.current.image().height,
+    });
+  }
 
-      cardGroup.add(cardBackground);
+  function updateImage() {
+    setIsBusy(true);
 
-      textFields.forEach((field) => {
-        cardGroup.add(field);
-      });
+    const image = new Image();
 
-      return [textFields, cardBackground, cardGroup];
+    image.onload = () => {
+      setIsBusy(false);
+      backgroundRef.current.image(image);
+      positionImage(props.image.center);
     };
 
-    const [textFields, cardBackground, cardGroup] = createElements();
-
-    const positionElements = (pixelRatio) => {
-      const [panelWidth, panelHeight] = panelDimensions();
-      const cardWidth = panelWidth * 0.8;
-      const cardX = panelWidth / 2 - cardWidth / 2;
-      const textPadding = 22 / pixelRatio;
-
-      textFields.forEach((field, index) => {
-        field.x(textPadding);
-
-        field.fontSize((props.lines[index].fontSize ?? 18) / pixelRatio);
-
-        field.width(cardWidth - textPadding * 2);
-      });
-
-      let totalTextHeight = textFields.reduce(
-        (prevField, currentField) =>
-          prevField + currentField.getClientRect().height,
-        0
-      );
-
-      totalTextHeight += textPadding * 2;
-
-      cardBackground.width(cardWidth);
-      cardBackground.height(totalTextHeight);
-
-      cardGroup.x(cardX);
-      cardGroup.y(
-        panelHeight - totalTextHeight - props.bottomOffset / pixelRatio
-      );
-
-      for (let i = 0; i < textFields.length; i++) {
-        if (i > 0) {
-          const lastY =
-            textFields[i - 1].y() + textFields[i - 1].getClientRect().height;
-          textFields[i].y(lastY);
-        } else {
-          textFields[i].y(textPadding);
-        }
-      }
+    image.onerror = () => {
+      setIsBusy(false);
+      alert("Cannot load the image");
     };
 
-    positionElements(pixelRatio.current);
-
-    /* 
-    const textFields = props.lines.map((line, index) => {
-      return new Konva.Text({
-        x: textPadding,
-        y: textPadding,
-        text: line.text,
-        align: "center",
-        width: cardWidth - textPadding * 2,
-        fontSize: (line.fontSize ?? 18) / pixelRatio.current,
-        fontFamily: line.fontFamily ?? "Calibri",
-        fill: line.color ?? "#fff",
-        wrap: "word",
-        lineHeight: 1.5,
-      });
-    });
- */
-    /*     let totalTextHeight = textFields.reduce(
-      (prevField, currentField) =>
-        prevField + currentField.getClientRect().height,
-      0
-    );
-
-    totalTextHeight += textPadding * 2; */
-
-    /*     const rect = new Konva.Rect({
-      fill: "#000",
-      width: cardWidth,
-      height: totalTextHeight,
-      shadowColor: "#666",
-      shadowBlur: 5,
-      opacity: 0.9,
-      cornerRadius: 10,
-    }); */
-
-    /* const group = new Konva.Group({
-      draggable: true,
-      x: cardX,
-      y:
-        panelHeight - totalTextHeight - props.bottomOffset / pixelRatio.current,
-      width: cardWidth,
-      height: totalTextHeight,
-    }); */
-    /* 
-    group.on("dragmove", () => {
-      group.x(cardX);
-    });
-
-    group.add(rect);
-
-    for (let i = 0; i < textFields.length; i++) {
-      if (i > 0) {
-        const lastY =
-          textFields[i - 1].y() + textFields[i - 1].getClientRect().height;
-        textFields[i].y(lastY);
-      }
-
-      group.add(textFields[i]);
-    } */
-
-    return { group: cardGroup, position: positionElements };
+    image.src = `/images/${props.image.file}`;
   }
 
   useEffect(() => {
@@ -212,16 +120,6 @@ export default function Preview(props) {
       if (cardRef.current) {
         cardRef.current.position(pixelRatio.current);
       }
-
-      /*       if (cardRef.current) {
-        const cardX = panelWidth / 2 - (panelWidth * 0.8) / 2;
-        const cardY =
-          panelHeight -
-          cardRef.current.height() -
-          props.bottomOffset / pixelRatio.current;
-        cardRef.current.x(cardX);
-        cardRef.current.y(cardY);
-      } */
     };
 
     resizeCanvas();
@@ -242,9 +140,16 @@ export default function Preview(props) {
 
     const layer = new Konva.Layer();
 
-    cardRef.current = createCard();
+    cardRef.current = createCard({
+      lines: props.lines,
+      panelDimensions: panelDimensions,
+      bottomOffset: props.bottomOffset,
+      pixelRatio: pixelRatio.current,
+    });
 
-    backgroundRef.current = createSolidBackground("#444");
+    //backgroundRef.current = createSolidBackground("#444");
+    backgroundRef.current = createImageBackground();
+    updateImage();
 
     layer.add(backgroundRef.current);
     layer.add(cardRef.current.group);
@@ -260,6 +165,10 @@ export default function Preview(props) {
     };
   }, [props.width, props.height]);
 
+  useEffect(() => {
+    updateImage();
+  }, [props.image]);
+
   const downloadPanel = (
     <div>
       <button
@@ -272,10 +181,13 @@ export default function Preview(props) {
   );
 
   return (
-    <div className="space-y-1" ref={previewContainerRef}>
-      <div>{downloadPanel}</div>
-      <div ref={canvasContainerRef}></div>
-      <div>{downloadPanel}</div>
+    <div className="relative" ref={previewContainerRef}>
+      <div className="space-y-1">
+        <div>{downloadPanel}</div>
+        <div ref={canvasContainerRef}></div>
+        <div>{downloadPanel}</div>
+      </div>
+      {isBusy && <BusyOverlay />}
     </div>
   );
 }
