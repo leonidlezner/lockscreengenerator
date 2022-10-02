@@ -86,7 +86,7 @@ export default function Preview(props) {
       alert("Cannot load the image");
     };
 
-    image.src = `/images/${props.image.file}`;
+    image.src = `${process.env.PUBLIC_URL}/images/${props.image.file}`;
   }, [props.image, positionImage]);
 
   useEffect(() => {
