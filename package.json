@@ -1,5 +1,6 @@
 {
   "name": "lockscreengenerator",
+  "homepage": "https://leonidlezner.github.io/lockscreengenerator/",
   "version": "0.1.0",
   "private": true,
   "dependencies": {
