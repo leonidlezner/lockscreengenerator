@@ -2,18 +2,19 @@ import Konva from "konva";
 import { FONTSIZES } from "../data/fontsizes";
 
 export default function createCard({
-  lines,
+  num_of_lines,
   panelDimensions,
   bottomOffset,
   pixelRatio,
   cardBckColor,
 }) {
   const createElements = () => {
-    const textFields = lines.map((line, index) => {
+    const textFields = [...Array(num_of_lines).keys()].map((line, index) => {
       return new Konva.Text({
         align: "center",
         wrap: "word",
         lineHeight: 1.5,
+        preventDefault: false,
       });
     });
 
@@ -23,6 +24,7 @@ export default function createCard({
       shadowBlur: 5,
       opacity: 0.6,
       cornerRadius: 10,
+      preventDefault: false,
     });
 
     const cardGroup = new Konva.Group();
@@ -85,7 +87,6 @@ export default function createCard({
     }
   };
 
-  updateTextFields(lines, pixelRatio);
   positionElements(pixelRatio);
 
   return {

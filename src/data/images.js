@@ -9,4 +9,29 @@ export const IMAGES = [
     file: "DB2022AU00554_retina_2400.jpg",
     center: 0.4,
   },
+  {
+    title: "ID. Buzz 3",
+    file: "Large-15880-ID.BuzzCargoEuropeanmodel.jpeg",
+    center: 0.45,
+  },
+  {
+    title: "ID. Buzz 4",
+    file: "Large-15908-ID.BuzzEuropeanmodel.jpeg",
+    center: 0.3,
+  },
+  {
+    title: "ID. Buzz 5",
+    file: "Large-15911-ID.BuzzEuropeanmodel.jpeg",
+    center: 0.55,
+  },
+  {
+    title: "ID.4",
+    file: "Large-14180-2021ID.4AWDProSwithGradientPackage.jpeg",
+    center: 0.35,
+  },
+  {
+    title: "Golf 8 GTI",
+    file: "Large-14531-2022GolfGTI.jpeg",
+    center: 0.3,
+  },
 ];

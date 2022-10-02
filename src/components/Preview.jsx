@@ -1,6 +1,6 @@
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import Konva from "konva";
-import createCard from "./createCard";
+import createCard from "../helpers/createCard";
 import BusyOverlay from "./BusyOverlay";
 import DownloadPanel from "./DownloadPanel";
 
@@ -13,12 +13,12 @@ export default function Preview(props) {
   const pixelRatio = useRef(1);
   const [isBusy, setIsBusy] = useState(false);
 
-  function panelDimensions() {
+  const panelDimensions = useCallback(() => {
     return [
       props.width / pixelRatio.current,
       props.height / pixelRatio.current,
     ];
-  }
+  }, [props.width, props.height]);
 
   function handleDownload() {
     const anchor = document.createElement("a");
@@ -29,46 +29,48 @@ export default function Preview(props) {
     anchor.click();
   }
 
-  function createImageBackground() {
-    const [panelWidth, panelHeight] = panelDimensions();
+  const createStage = useCallback(([panelWidth, panelHeight], container) => {
+    const stage = new Konva.Stage({
+      container: container,
+      width: panelWidth,
+      height: panelHeight,
+      preventDefault: false,
+    });
 
+    return stage;
+  }, []);
+
+  const createImageBackground = useCallback(([panelWidth, panelHeight]) => {
     let image = new Konva.Image({
       x: 0,
       y: 0,
       width: panelWidth,
       height: panelHeight,
+      preventDefault: false,
     });
 
     return image;
-  }
+  }, []);
 
-  function createStage() {
-    const [panelWidth, panelHeight] = panelDimensions();
+  const positionImage = useCallback(
+    (center) => {
+      const [panelWidth, panelHeight] = panelDimensions();
 
-    const stage = new Konva.Stage({
-      container: canvasContainerRef.current,
-      width: panelWidth,
-      height: panelHeight,
-    });
+      const imageRatio = backgroundRef.current.image().height / panelHeight;
 
-    return stage;
-  }
+      backgroundRef.current.setAttrs({
+        cropX:
+          backgroundRef.current.image().width * (center ?? 0.5) -
+          panelWidth / 2,
+        cropY: 0,
+        cropWidth: panelWidth * imageRatio,
+        cropHeight: backgroundRef.current.image().height,
+      });
+    },
+    [panelDimensions]
+  );
 
-  function positionImage(center) {
-    const [panelWidth, panelHeight] = panelDimensions();
-
-    const imageRatio = backgroundRef.current.image().height / panelHeight;
-
-    backgroundRef.current.setAttrs({
-      cropX:
-        backgroundRef.current.image().width * (center ?? 0.5) - panelWidth / 2,
-      cropY: 0,
-      cropWidth: panelWidth * imageRatio,
-      cropHeight: backgroundRef.current.image().height,
-    });
-  }
-
-  function updateImage() {
+  const updateImage = useCallback(() => {
     setIsBusy(true);
 
     const image = new Image();
@@ -85,7 +87,47 @@ export default function Preview(props) {
     };
 
     image.src = `/images/${props.image.file}`;
-  }
+  }, [props.image, positionImage]);
+
+  useEffect(() => {
+    stageRef.current = createStage(
+      panelDimensions(),
+      canvasContainerRef.current
+    );
+
+    const layer = new Konva.Layer();
+
+    cardRef.current = createCard({
+      num_of_lines: props.lines.length,
+      panelDimensions: panelDimensions,
+      bottomOffset: props.bottomOffset,
+      pixelRatio: pixelRatio.current,
+    });
+
+    backgroundRef.current = createImageBackground(panelDimensions());
+    updateImage();
+
+    layer.add(backgroundRef.current);
+    layer.add(cardRef.current.group);
+    stageRef.current.add(layer);
+
+    return () => {
+      layer.destroy();
+      stageRef.current.destroy();
+      stageRef.current = null;
+      cardRef.current = null;
+      backgroundRef.current = null;
+    };
+  }, [
+    props.width,
+    props.height,
+    props.lines.length,
+    createStage,
+    createImageBackground,
+    panelDimensions,
+    props.bottomOffset,
+    updateImage,
+  ]);
 
   useEffect(() => {
     const resizeCanvas = () => {
@@ -124,42 +166,17 @@ export default function Preview(props) {
 
     observer.observe(previewContainerRef.current);
 
-    stageRef.current = createStage();
-
-    const layer = new Konva.Layer();
-
-    cardRef.current = createCard({
-      lines: props.lines,
-      panelDimensions: panelDimensions,
-      bottomOffset: props.bottomOffset,
-      pixelRatio: pixelRatio.current,
-    });
-
-    backgroundRef.current = createImageBackground();
-    updateImage();
-
-    layer.add(backgroundRef.current);
-    layer.add(cardRef.current.group);
-    stageRef.current.add(layer);
+    cardRef.current.updateTextFields(props.lines, pixelRatio.current);
+    cardRef.current.position(pixelRatio.current);
 
     return () => {
       observer.disconnect();
-      layer.destroy();
-      stageRef.current.destroy();
-      stageRef.current = null;
-      cardRef.current = null;
-      backgroundRef.current = null;
     };
-  }, [props.width, props.height, props.lines.length]);
-
-  useEffect(() => {
-    cardRef.current.updateTextFields(props.lines, pixelRatio.current);
-    cardRef.current.position(pixelRatio.current);
-  }, [props.lines]);
+  }, [props.lines, panelDimensions, props.width, updateImage]);
 
   useEffect(() => {
     updateImage();
-  }, [props.image]);
+  }, [props.image, updateImage]);
 
   return (
     <div className="relative" ref={previewContainerRef}>
