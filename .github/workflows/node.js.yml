@@ -25,4 +25,5 @@ jobs:
     - run: npm run build
     - name: Deploy GitHub Pages site
       uses: actions/deploy-pages@v1.2.1
-      token: ${{secrets.GITHUB_TOKEN}}
+      with:
+        token: ${{secrets.GITHUB_TOKEN}}
