@@ -1,11 +1,11 @@
-import { useState } from "react";
 import { IMAGES } from "../data/images";
 import { SCREENSIZES } from "../data/screensizes";
+import useStorageState from "../helpers/useStorageState";
 import Preview from "./Preview";
 import Settings, { defaultSettings } from "./Settings";
 
 export default function Editor() {
-  const [settings, setSettings] = useState(defaultSettings);
+  const [settings, setSettings] = useStorageState(defaultSettings, "settings");
 
   return (
     <div className="overflow-hidden sm:flex sm:rounded-md">
