@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import useQRCode from "../helpers/useQRCode";
 
 export default function QRCode({ text, size = 50, lightColor, darkColor }) {
-  const [generate] = useQRCode();
+  const { generate } = useQRCode();
   const [image, setImage] = useState("");
 
   useEffect(() => {

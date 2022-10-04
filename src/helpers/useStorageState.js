@@ -7,7 +7,28 @@ export default function useStorageState(defaultValue, name) {
   };
 
   const [value, setValue] = useState(() => {
-    return loadValue(name) ?? defaultValue;
+    const saved = loadValue(name);
+
+    if (!saved) {
+      return defaultValue;
+    }
+
+    if (Array.isArray(saved)) {
+      if (saved.length === defaultValue.length) {
+        return saved;
+      } else {
+        return defaultValue;
+      }
+    } else {
+      if (
+        Object.keys(saved).sort().toString() ===
+        Object.keys(defaultValue).sort().toString()
+      ) {
+        return saved;
+      } else {
+        return defaultValue;
+      }
+    }
   });
 
   const storeValue = (name, value) => {

@@ -3,6 +3,7 @@ import Konva from "konva";
 import createCard from "../helpers/createCard";
 import BusyOverlay from "./BusyOverlay";
 import DownloadPanel from "./DownloadPanel";
+import useQRCode from "../helpers/useQRCode";
 
 export default function Preview(props) {
   const stageRef = useRef(null);
@@ -12,6 +13,7 @@ export default function Preview(props) {
   const previewContainerRef = useRef(null);
   const pixelRatio = useRef(1);
   const [isBusy, setIsBusy] = useState(false);
+  const { generateVCard } = useQRCode();
 
   const panelDimensions = useCallback(() => {
     return [
@@ -41,7 +43,7 @@ export default function Preview(props) {
   }, []);
 
   const createImageBackground = useCallback(([panelWidth, panelHeight]) => {
-    let image = new Konva.Image({
+    const image = new Konva.Image({
       x: 0,
       y: 0,
       width: panelWidth,
@@ -177,6 +179,27 @@ export default function Preview(props) {
   useEffect(() => {
     updateImage();
   }, [props.image, updateImage]);
+
+  useEffect(() => {
+    async function generate() {
+      setIsBusy(true);
+      try {
+        const qrImage = await generateVCard(props.vCard, {
+          color: {
+            dark: "#fff",
+            light: "#000",
+          },
+        });
+        cardRef.current.updateQRCodeImage(qrImage);
+        cardRef.current.position(pixelRatio.current);
+      } catch (err) {
+        console.error(err);
+      } finally {
+        setIsBusy(false);
+      }
+    }
+    generate();
+  }, [props.vCard, generateVCard]);
 
   return (
     <div className="relative" ref={previewContainerRef}>

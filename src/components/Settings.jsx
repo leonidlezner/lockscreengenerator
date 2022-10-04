@@ -66,4 +66,11 @@ export const defaultSettings = {
       fontSize: 0,
     },
   ],
+  vCardData: {
+    firstName: "Max",
+    lastName: "Mustermann",
+    phone: "0123 45678900",
+    eMail: "firstname.lastname@company.com",
+    company: "Organization Inc.",
+  },
 };

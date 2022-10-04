@@ -26,6 +26,7 @@ export default function Editor() {
           bottomOffset={SCREENSIZES[settings.screenSize].bottomOffset}
           lines={settings.lines}
           image={IMAGES[settings.image]}
+          vCard={settings.vCardData}
         />
       </div>
     </div>

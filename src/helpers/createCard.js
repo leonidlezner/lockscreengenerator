@@ -35,10 +35,26 @@ export default function createCard({
       cardGroup.add(field);
     });
 
-    return [textFields, cardBackground, cardGroup];
+    const qrCodeImage = new Konva.Image({
+      preventDefault: false,
+    });
+
+    const qrBackground = new Konva.Rect({
+      fill: cardBckColor ?? "#000",
+      shadowColor: "#000",
+      shadowBlur: 7,
+      cornerRadius: 10,
+      preventDefault: false,
+    });
+
+    cardGroup.add(qrBackground);
+    cardGroup.add(qrCodeImage);
+
+    return [textFields, cardBackground, cardGroup, qrCodeImage, qrBackground];
   };
 
-  const [textFields, cardBackground, cardGroup] = createElements();
+  const [textFields, cardBackground, cardGroup, qrCodeImage, qrBackground] =
+    createElements();
 
   const updateTextFields = (lines, pixelRatio) => {
     for (let i = 0; i < textFields.length; i++) {
@@ -49,6 +65,16 @@ export default function createCard({
         fontSize: (FONTSIZES[lines[i].fontSize].fontSize ?? 18) / pixelRatio,
       });
     }
+  };
+
+  const updateQRCodeImage = (imageData) => {
+    const image = new Image();
+
+    image.onload = () => {
+      qrCodeImage.image(image);
+    };
+
+    image.src = imageData;
   };
 
   const positionElements = (pixelRatio) => {
@@ -73,6 +99,22 @@ export default function createCard({
     cardBackground.width(cardWidth);
     cardBackground.height(totalTextHeight);
 
+    qrCodeImage.width(panelWidth * 0.4);
+    qrCodeImage.height(panelWidth * 0.4);
+
+    qrBackground.width(panelWidth * 0.42);
+    qrBackground.height(panelWidth * 0.42);
+
+    qrCodeImage.x(cardWidth / 2 - qrCodeImage.width() / 2);
+    qrCodeImage.y(
+      -qrBackground.height() +
+        (qrBackground.height() - qrCodeImage.height()) / 2 -
+        textPadding
+    );
+
+    qrBackground.x(cardWidth / 2 - qrBackground.width() / 2);
+    qrBackground.y(-qrBackground.height() - textPadding);
+
     cardGroup.x(cardX);
     cardGroup.y(panelHeight - totalTextHeight - bottomOffset / pixelRatio);
 
@@ -93,5 +135,6 @@ export default function createCard({
     group: cardGroup,
     position: positionElements,
     updateTextFields: updateTextFields,
+    updateQRCodeImage: updateQRCodeImage,
   };
 }
