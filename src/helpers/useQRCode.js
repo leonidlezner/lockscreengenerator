@@ -13,6 +13,8 @@ export default function useQRCode() {
 
     if (vCardData.firstName && vCardData.lastName) {
       lines.push(`N:${vCardData.firstName};${vCardData.lastName}`);
+    } else {
+      throw Error();
     }
 
     if (vCardData.company) {

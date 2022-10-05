@@ -5,7 +5,7 @@ export default function SelectElement({ items, onChange, value, name }) {
       id={name}
       onChange={onChange}
       value={value}
-      className="form-select block w-full appearance-none rounded-md border-2 border-gray-300 bg-gray-50 px-3 py-1 hover:bg-white"
+      className="form-select block w-full appearance-none rounded-md border-2 border-gray-300 bg-gray-50 px-3 py-1 pr-8 hover:bg-white"
     >
       {items.map((el, index) => (
         <option value={index} key={index}>

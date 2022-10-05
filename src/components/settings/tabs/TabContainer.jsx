@@ -10,10 +10,10 @@ export default function TabContainer({ children }) {
         <button
           onClick={() => setSelection(index)}
           className={
-            "border-separate overflow-clip rounded-t-md border-t-2 border-white bg-gray-200 px-4 py-2" +
+            "border-separate overflow-clip rounded-t-md border-t-2 border-gray-800 bg-gray-200 px-4 py-2 font-semibold" +
             (selection === index
               ? ""
-              : " border-none bg-gray-300 text-gray-600")
+              : " border-none bg-gray-300 font-normal text-gray-600")
           }
         >
           {child.props.caption}

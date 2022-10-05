@@ -19,6 +19,8 @@ export default function Settings({ settings, setSettings }) {
     });
   }
 
+  //console.log(settings.vCardData);
+
   return (
     <div className="space-y-2">
       <SettingsElement name="screenSize" label="Smartphone">
@@ -83,10 +85,10 @@ export const defaultSettings = {
     },
   ],
   vCardData: {
-    firstName: "Max",
-    lastName: "Mustermann",
-    phone: "0123 45678900",
-    eMail: "firstname.lastname@company.com",
-    company: "Organization Inc.",
+    firstName: "",
+    lastName: "",
+    phone: "",
+    eMail: "",
+    company: "",
   },
 };

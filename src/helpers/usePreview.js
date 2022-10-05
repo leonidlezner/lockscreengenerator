@@ -67,8 +67,13 @@ export default function usePreview(container) {
 
   const _layoutCard = (screenWidth, screenHeight, bottomOffset) => {
     const padding = 15;
-    const qrCodeHeight = elementsRef.current.qrCode.height();
-    const qrCodeWidth = elementsRef.current.qrCode.width();
+
+    const isImageSet = elementsRef.current.qrCode.image() ? true : false;
+
+    const qrCodeHeight = isImageSet ? elementsRef.current.qrCode.height() : 0;
+    const qrCodeWidth = isImageSet ? elementsRef.current.qrCode.width() : 0;
+
+    //console.log(elementsRef.current.qrCode.image(), qrCodeWidth);
 
     let textHeight = 0;
 
@@ -76,7 +81,7 @@ export default function usePreview(container) {
     for (let i = 0; i < elementsRef.current.textFields.length; i++) {
       elementsRef.current.textFields[i].setAttrs({
         y: textHeight,
-        width: screenWidth - qrCodeWidth - padding * 3,
+        width: screenWidth - qrCodeWidth - padding * (qrCodeWidth ? 3 : 2),
       });
 
       textHeight += elementsRef.current.textFields[i].height();
@@ -99,7 +104,7 @@ export default function usePreview(container) {
     });
 
     elementsRef.current.textFieldsGroup.setAttrs({
-      x: qrCodeWidth + padding * 2,
+      x: qrCodeWidth + padding * (qrCodeWidth ? 2 : 1),
       y: cardHeight / 2 - textHeight / 2,
     });
 
@@ -135,7 +140,7 @@ export default function usePreview(container) {
 
   const setup = useCallback(
     (container, parent, screenWidth, screenHeight, bottomOffset) => {
-      console.log("setup");
+      ////console.log("setup");
 
       stageRef.current = new Konva.Stage({
         container: container,
@@ -171,7 +176,7 @@ export default function usePreview(container) {
 
   const updateLines = useCallback(
     (lines, screenWidth, screenHeight, bottomOffset) => {
-      console.log("Update lines");
+      ////console.log("Update lines");
 
       const filteredLines = lines.filter((line) => line.text !== "");
       let currentLinesCount = elementsRef.current.textFields.length;
@@ -221,7 +226,7 @@ export default function usePreview(container) {
 
   const updateImage = useCallback(
     (imageData, onSetIsBusy, screenWidth, screenHeight) => {
-      console.log("Update image()");
+      ////console.log("Update image()");
       onSetIsBusy(true);
 
       const image = new Image();
@@ -252,9 +257,8 @@ export default function usePreview(container) {
   );
 
   const updateVCard = useCallback(
-    (vCardData, onSetIsBusy, screenWidth, screenHeight) => {
+    (vCardData, onSetIsBusy, screenWidth, screenHeight, bottomOffset) => {
       async function generate() {
-        onSetIsBusy(true);
         try {
           const qrImageData = await generateVCard(vCardData);
 
@@ -264,15 +268,22 @@ export default function usePreview(container) {
             elementsRef.current.qrCode.setAttrs({
               image: image,
             });
+
+            _layoutCard(screenWidth, screenHeight, bottomOffset);
           };
 
           image.src = qrImageData;
         } catch (err) {
-          console.error(err);
+          //console.log("set image to 0");
+
+          elementsRef.current.qrCode.image(null);
+
+          _layoutCard(screenWidth, screenHeight, bottomOffset);
         } finally {
-          onSetIsBusy(false);
+          //console.log("finally", elementsRef.current.qrCode.image());
         }
       }
+
       generate();
     },
     [generateVCard]

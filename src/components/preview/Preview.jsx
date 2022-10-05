@@ -18,7 +18,7 @@ export default function Preview(props) {
   }
 
   useEffect(() => {
-    console.log("I should run only once");
+    //console.log("I should run only once");
     setup(
       canvasContainerRef.current,
       previewContainerRef.current,
@@ -32,21 +32,26 @@ export default function Preview(props) {
     };
   }, [setup, destroy, props.width, props.height, props.bottomOffset]);
 
-  useEffect(
-    () =>
-      updateLines(props.lines, props.width, props.height, props.bottomOffset),
-    [updateLines, props.lines, props.width, props.height, props.bottomOffset]
-  );
+  useEffect(() => {
+    //console.log("useEffect for lines");
+    updateLines(props.lines, props.width, props.height, props.bottomOffset);
+  }, [updateLines, props.lines, props.width, props.height, props.bottomOffset]);
 
   useEffect(() => {
-    console.log("useEffect for image");
+    //console.log("useEffect for image");
     updateImage(props.image, setIsBusy, props.width, props.height);
   }, [updateImage, props.image, props.width, props.height]);
 
-  useEffect(
-    () => updateVCard(props.vCard, setIsBusy),
-    [updateVCard, props.vCard]
-  );
+  useEffect(() => {
+    //console.log("useEffect for vcard");
+    updateVCard(
+      props.vCard,
+      setIsBusy,
+      props.width,
+      props.height,
+      props.bottomOffset
+    );
+  }, [updateVCard, props.vCard, props.width, props.height, props.bottomOffset]);
 
   return (
     <div className="relative" ref={previewContainerRef}>
