@@ -12,9 +12,7 @@ export default function Preview(props) {
 
   function handleDownload() {
     const anchor = document.createElement("a");
-
     anchor.href = getDataURL();
-
     anchor.download = `background_${props.width}_${props.height}.png`;
     anchor.click();
   }
@@ -25,15 +23,20 @@ export default function Preview(props) {
       canvasContainerRef.current,
       previewContainerRef.current,
       props.width,
-      props.height
+      props.height,
+      props.bottomOffset
     );
 
     return () => {
       destroy();
     };
-  }, [setup, destroy, props.width, props.height]);
+  }, [setup, destroy, props.width, props.height, props.bottomOffset]);
 
-  useEffect(() => updateLines(props.lines), [updateLines, props.lines]);
+  useEffect(
+    () =>
+      updateLines(props.lines, props.width, props.height, props.bottomOffset),
+    [updateLines, props.lines, props.width, props.height, props.bottomOffset]
+  );
 
   useEffect(() => {
     console.log("useEffect for image");
