@@ -5,7 +5,10 @@ import Preview from "../preview/Preview";
 import Settings, { defaultSettings } from "../settings/Settings";
 
 export default function Editor() {
-  const [settings, setSettings] = useStorageState(defaultSettings, "settings");
+  const [settings, setSettings] = useStorageState(
+    defaultSettings,
+    `settings_${defaultSettings.version}`
+  );
 
   return (
     <div className="overflow-hidden sm:flex sm:rounded-md">

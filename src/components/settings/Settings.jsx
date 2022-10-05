@@ -3,6 +3,9 @@ import { IMAGES } from "../../data/images";
 import SettingsElement from "./SettingsElement";
 import SelectElement from "./SelectElement";
 import SettingsLines from "./SettingsLines";
+import TabContainer from "./tabs/TabContainer";
+import Tab from "./tabs/Tab";
+import SettingsVCard from "./vcard/SettingsVCard";
 
 export default function Settings({ settings, setSettings }) {
   function handleChange(event) {
@@ -36,16 +39,29 @@ export default function Settings({ settings, setSettings }) {
         />
       </SettingsElement>
 
-      <SettingsLines
-        name="lines"
-        onChange={handleChange}
-        value={settings.lines}
-      />
+      <TabContainer>
+        <Tab caption="📝 Text">
+          <SettingsLines
+            name="lines"
+            onChange={handleChange}
+            value={settings.lines}
+          />
+        </Tab>
+        <Tab caption="🪪 VCard">
+          <SettingsVCard
+            name="vCardData"
+            values={settings.vCardData}
+            onChange={handleChange}
+            delay={1000}
+          />
+        </Tab>
+      </TabContainer>
     </div>
   );
 }
 
 export const defaultSettings = {
+  version: 4,
   screenSize: 0,
   image: 0,
   lines: [
