@@ -1,11 +1,14 @@
-import { IMAGES } from "../data/images";
-import { SCREENSIZES } from "../data/screensizes";
-import useStorageState from "../helpers/useStorageState";
-import Preview from "./Preview";
-import Settings, { defaultSettings } from "./Settings";
+import { IMAGES } from "../../data/images";
+import { SCREENSIZES } from "../../data/screensizes";
+import useStorageState from "../../helpers/useStorageState";
+import Preview from "../preview/Preview";
+import Settings, { defaultSettings } from "../settings/Settings";
 
 export default function Editor() {
-  const [settings, setSettings] = useStorageState(defaultSettings, "settings");
+  const [settings, setSettings] = useStorageState(
+    defaultSettings,
+    `settings_${defaultSettings.version}`
+  );
 
   return (
     <div className="overflow-hidden sm:flex sm:rounded-md">
@@ -26,6 +29,7 @@ export default function Editor() {
           bottomOffset={SCREENSIZES[settings.screenSize].bottomOffset}
           lines={settings.lines}
           image={IMAGES[settings.image]}
+          vCard={settings.vCardData}
         />
       </div>
     </div>

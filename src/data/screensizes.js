@@ -11,4 +11,10 @@ export const SCREENSIZES = [
     width: 828,
     bottomOffset: 200,
   },
+  {
+    title: "iPhone 11 Max",
+    height: 2688,
+    width: 1242,
+    bottomOffset: 250,
+  },
 ];

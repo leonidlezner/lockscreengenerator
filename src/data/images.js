@@ -34,4 +34,9 @@ export const IMAGES = [
     file: "Large-14531-2022GolfGTI.jpeg",
     center: 0.3,
   },
+  {
+    title: "Audi Skysphere",
+    file: "Audi-Skysphere.jpeg",
+    center: 0.45,
+  },
 ];

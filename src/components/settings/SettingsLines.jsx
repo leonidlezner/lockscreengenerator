@@ -1,4 +1,4 @@
-import { FONTSIZES } from "../data/fontsizes";
+import { FONTSIZES } from "../../data/fontsizes";
 import SelectElement from "./SelectElement";
 import SettingsElement from "./SettingsElement";
 
