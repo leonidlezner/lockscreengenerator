@@ -1,9 +1,9 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import Konva from "konva";
-import createCard from "../helpers/createCard";
+import createCard from "../../helpers/createCard";
 import BusyOverlay from "./BusyOverlay";
 import DownloadPanel from "./DownloadPanel";
-import useQRCode from "../helpers/useQRCode";
+import useQRCode from "../../helpers/useQRCode";
 
 export default function Preview(props) {
   const stageRef = useRef(null);

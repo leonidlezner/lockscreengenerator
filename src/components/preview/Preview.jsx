@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import usePreview from "../helpers/usePreview";
+import usePreview from "../../helpers/usePreview";
 import BusyOverlay from "./BusyOverlay";
 import DownloadPanel from "./DownloadPanel";
 

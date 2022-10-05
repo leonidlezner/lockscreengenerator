@@ -1,5 +1,5 @@
-import { SCREENSIZES } from "../data/screensizes";
-import { IMAGES } from "../data/images";
+import { SCREENSIZES } from "../../data/screensizes";
+import { IMAGES } from "../../data/images";
 import SettingsElement from "./SettingsElement";
 import SelectElement from "./SelectElement";
 import SettingsLines from "./SettingsLines";

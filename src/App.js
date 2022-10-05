@@ -1,5 +1,5 @@
 import About from "./components/About";
-import Editor from "./components/Editor";
+import Editor from "./components/editor/Editor";
 import QRCode from "./components/QRCode";
 
 export default function App() {
