@@ -10,7 +10,7 @@ export default function App() {
           Lock Screen Generator
         </h1>
         <QRCode
-          text={process.env.PUBLIC_URL}
+          text="https://leonidlezner.github.io/lockscreengenerator/"
           size={60}
           darkColor="#fff"
           lightColor="#111827"
