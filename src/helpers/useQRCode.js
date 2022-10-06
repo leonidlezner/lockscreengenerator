@@ -12,7 +12,7 @@ export default function useQRCode() {
     lines.push("VERSION:3.0");
 
     if (vCardData.firstName && vCardData.lastName) {
-      lines.push(`N:${vCardData.firstName};${vCardData.lastName}`);
+      lines.push(`N:${vCardData.lastName};${vCardData.firstName}`);
     } else {
       throw Error();
     }
