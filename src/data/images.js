@@ -39,4 +39,9 @@ export const IMAGES = [
     file: "Audi-Skysphere.jpeg",
     center: 0.45,
   },
+  {
+    title: "CUPRA Formentor",
+    file: "CUPRA-Formentor-VZ5-Taiga-Grey-limited-edition-of-999-units-enters-production_01_HQ.jpg",
+    center: 0.6,
+  }
 ];
