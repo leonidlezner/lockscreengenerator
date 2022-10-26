@@ -1,0 +1,15 @@
+{
+  "files": {
+    "main.css": "/lockscreengenerator/static/css/main.a5e8b6b3.css",
+    "main.js": "/lockscreengenerator/static/js/main.16c1df6d.js",
+    "static/js/787.bae5b2c2.chunk.js": "/lockscreengenerator/static/js/787.bae5b2c2.chunk.js",
+    "index.html": "/lockscreengenerator/index.html",
+    "main.a5e8b6b3.css.map": "/lockscreengenerator/static/css/main.a5e8b6b3.css.map",
+    "main.16c1df6d.js.map": "/lockscreengenerator/static/js/main.16c1df6d.js.map",
+    "787.bae5b2c2.chunk.js.map": "/lockscreengenerator/static/js/787.bae5b2c2.chunk.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.a5e8b6b3.css",
+    "static/js/main.16c1df6d.js"
+  ]
+}
